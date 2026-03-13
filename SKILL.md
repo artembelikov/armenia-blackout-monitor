@@ -32,7 +32,7 @@ Create it with `{}` if it does not exist yet.
 ### Step 1 — Read state
 
 ```bash
-cat ~/.openclaw/workspace/.blackouts-state.json 2>/dev/null || echo '{"last_message_id":0}'
+cat ~/.openclaw/workspace/.blackouts-state.json 2>/dev/null || echo '{}'
 ```
 
 ### Step 2 — Read config

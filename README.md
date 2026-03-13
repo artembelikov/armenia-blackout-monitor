@@ -54,14 +54,13 @@ openclaw config set agents.defaults.heartbeat.every "15m"
 openclaw config set agents.defaults.heartbeat.lightContext true
 ```
 
-### 6. Initialize state (skip history)
+### 6. Initialize state
+
+Run the fetcher once — it will populate the checksum in state automatically:
 
 ```bash
-python3 ~/.openclaw/skills/armenia-blackouts/scripts/fetch_messages.py \
-  && echo '{"last_message_id": 32100}' > ~/.openclaw/workspace/.blackouts-state.json
+python3 ~/.openclaw/skills/armenia-blackouts/scripts/fetch_messages.py
 ```
-
-Replace `32100` with the current latest message ID.
 
 ### 7. Test manually
 
@@ -98,7 +97,7 @@ The first morning tick picks up all overnight messages.
 ├── openclaw.json                      ← heartbeat: every "15m" + activeHours
 ├── workspace/
 │   ├── HEARTBEAT.md                   ← heartbeat checklist
-│   └── .blackouts-state.json          ← last_message_id (created automatically)
+│   └── .blackouts-state.json          ← checksum + last_check (created automatically)
 └── skills/
     └── armenia-blackouts/
         ├── SKILL.md                   ← agent playbook

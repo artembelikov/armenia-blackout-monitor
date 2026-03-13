@@ -18,7 +18,7 @@ Steps:
    (in the language specified by `config.language`)
 4. If nothing new → reply `HEARTBEAT_OK` (no message to user)
 
-**Important**: Always update `last_message_id` in state, even if no messages affect the address.
+**Important**: Always update `messages_checksum` and `last_check` in state, even if no messages affect the address.
 
 ---
 
