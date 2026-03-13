@@ -20,7 +20,6 @@ All persistent state lives at `~/.openclaw/workspace/.blackouts-state.json`:
 
 ```json
 {
-  "last_message_id": 32100,
   "last_check": "2025-03-15T10:00:00",
   "messages_checksum": "e3b0c44298fc1c149afb..."
 }
@@ -101,7 +100,6 @@ python3 -c "
 import json, pathlib
 p = pathlib.Path('~/.openclaw/workspace/.blackouts-state.json').expanduser()
 state = json.loads(p.read_text()) if p.exists() else {}
-state['last_message_id'] = MAX_ID_HERE
 state['last_check'] = 'ISO_NOW_HERE'
 state['messages_checksum'] = 'CHECKSUM_FROM_STEP_3'
 p.write_text(json.dumps(state, ensure_ascii=False, indent=2))

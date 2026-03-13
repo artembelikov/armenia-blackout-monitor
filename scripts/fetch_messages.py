@@ -29,13 +29,13 @@ URL = f"https://t.me/s/{CHANNEL}"
 MAX_MESSAGES = 7
 
 
-def load_state() -> dict:
+def load_stored_checksum() -> str:
     if STATE_FILE.exists():
         try:
-            return json.loads(STATE_FILE.read_text())
+            return json.loads(STATE_FILE.read_text()).get("messages_checksum", "")
         except Exception:
             pass
-    return {}
+    return ""
 
 
 def fetch_last_messages() -> list[dict]:
@@ -88,8 +88,7 @@ def compute_checksum(messages: list[dict]) -> str:
 
 
 if __name__ == "__main__":
-    state = load_state()
-    stored_checksum = state.get("messages_checksum", "")
+    stored_checksum = load_stored_checksum()
 
     try:
         msgs = fetch_last_messages()
