@@ -1,0 +1,35 @@
+// ~/.openclaw/openclaw.json
+// Merge these sections into your existing config.
+// openclaw.json uses JSON5 — comments and trailing commas are allowed.
+
+{
+  "agents": {
+    "defaults": {
+      "workspace": "~/.openclaw/workspace",
+
+      // Heartbeat: check every 15 minutes
+      // Night quiet period handled by activeHours — heartbeat is skipped,
+      // saving tokens. First morning tick picks up all overnight messages.
+      "heartbeat": {
+        "every": "15m",
+        "target": "last",
+        "model": "anthropic/claude-sonnet-4-5",
+        "lightContext": true,
+        "activeHours": {
+          "start": "07:00",
+          "end": "23:00",
+          "timezone": "Asia/Yerevan"
+        },
+        "ackMaxChars": 500
+      }
+    }
+  },
+
+  "skills": {
+    "entries": {
+      "armenia-blackouts": {
+        "enabled": true
+      }
+    }
+  }
+}
