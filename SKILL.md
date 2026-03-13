@@ -21,11 +21,12 @@ All persistent state lives at `~/.openclaw/workspace/.blackouts-state.json`:
 ```json
 {
   "last_message_id": 32100,
-  "last_check": "2025-03-15T10:00:00"
+  "last_check": "2025-03-15T10:00:00",
+  "messages_checksum": "e3b0c44298fc1c149afb..."
 }
 ```
 
-Create it with `last_message_id: 0` if it does not exist yet.
+Create it with `{}` if it does not exist yet.
 
 ## Workflow
 
@@ -53,16 +54,26 @@ The config contains:
 python3 ~/.openclaw/skills/armenia-blackouts/scripts/fetch_messages.py
 ```
 
-This prints a JSON array of new messages since `last_message_id` from the state file:
+This fetches the **last 7 messages** from the channel and checks whether their
+content has changed since the last run (via SHA-256 checksum stored in state).
+
+Two possible outputs:
 
 ```json
-[
-  { "id": 32101, "text": "...", "datetime": "2025-03-15T10:05:00+04:00" },
-  { "id": 32102, "text": "...", "datetime": "2025-03-15T10:20:00+04:00" }
-]
+{ "no_changes": true }
 ```
+→ checksum unchanged. Output `NO_NEW_MESSAGES` and stop — do not spend tokens on parsing.
 
-If the array is empty → output `NO_NEW_MESSAGES` and stop.
+```json
+{
+  "checksum": "e3b0c44...",
+  "messages": [
+    { "id": 32101, "text": "...", "datetime": "2025-03-15T10:05:00+04:00", "url": "..." },
+    { "id": 32102, "text": "...", "datetime": "2025-03-15T10:20:00+04:00", "url": "..." }
+  ]
+}
+```
+→ messages changed. Proceed to Step 4. Save `checksum` in Step 5.
 
 ### Step 4 — Analyze each message
 
@@ -83,8 +94,7 @@ Do NOT call an external API for this step; analyze inline.
 
 ### Step 5 — Persist new state
 
-Update `last_message_id` to the highest message ID seen, regardless of whether
-the address was affected.
+Update state with the highest message ID, current timestamp, and new checksum.
 
 ```bash
 python3 -c "
@@ -93,6 +103,7 @@ p = pathlib.Path('~/.openclaw/workspace/.blackouts-state.json').expanduser()
 state = json.loads(p.read_text()) if p.exists() else {}
 state['last_message_id'] = MAX_ID_HERE
 state['last_check'] = 'ISO_NOW_HERE'
+state['messages_checksum'] = 'CHECKSUM_FROM_STEP_3'
 p.write_text(json.dumps(state, ensure_ascii=False, indent=2))
 "
 ```
